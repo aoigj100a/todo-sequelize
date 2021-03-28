@@ -6,6 +6,10 @@ const session = require('express-session')
 const usePassport = require('./config/passport')
 const routes = require('./routes')
 
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config()
+}
+
 require('./models')
 
 const app = express()
@@ -16,7 +20,7 @@ app.set('view engine', 'hbs')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use(session({
-    secret: 'ThisIsMySecret',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true
 }))
@@ -28,7 +32,7 @@ app.use((req, res, next) => {
     res.locals.isAuthenticated = req.isAuthenticated()
     res.locals.user = req.user
     next()
-  })
+})
 
 app.use(routes)
 
